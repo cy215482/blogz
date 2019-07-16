@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = ''
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:password@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
@@ -76,12 +76,15 @@ def login():
 
         if not user:
             username_error = "User does not exist."
+            return redirect ('/login')
             if username == "":
                 username_error = "Please enter your username."
+                return redirect ('/signup')
 
         if password == "":
             password_error = "Please enter your password."
-
+            return redirect('/login')
+   
         if user and user.password != password:
             password_error = "That is the wrong password."
 
@@ -109,7 +112,7 @@ def signup():
             username_error = "Usernames must be longer than 3 characters."
             if username == "":
                 username_error = "Please enter a username."
-
+      
         if password != verify:
             password_error = "Passwords must match."
             verify_error = "Passwords must match."
