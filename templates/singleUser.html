@@ -3,7 +3,11 @@
 {% block content %}
 
 <h1>{{username}} Welcome to {{author}} page!</h1>
-<p id="author">Written by <a href="blog?user={{post.owner.id}}">{{post.owner.username}}</a>.</p>
-<p>{{post.content}}</p>
+
+if "id" in request.args:
+        post_id = request.args.get('id')
+        blog = Blog.query.filter_by(id = post_id).all()
+        # username = User.query.get(owner.username)
+        return render_template('blogs.html', title = title, blog = blog, post_id = post_id)
 
 {% endblock %}
