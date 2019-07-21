@@ -38,8 +38,8 @@ def require_login():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-   users=  User.query.order_by(User.username).all()
-    return render_template('index.html', users = users)
+   users =  User.query.order_by.all()
+   return render_template('index.html', users = users)
 
 @app.route('/blog', methods=['POST', 'GET'])
 def blog_listing():
