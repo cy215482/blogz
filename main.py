@@ -38,7 +38,7 @@ def require_login():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    User.query.order_by(User.username).all()
+   users=  User.query.order_by(User.username).all()
     return render_template('index.html', users = users)
 
 @app.route('/blog', methods=['POST', 'GET'])
