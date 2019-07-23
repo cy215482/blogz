@@ -1,9 +1,11 @@
 from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
+app.secret_key = "923hr2nc';l,"
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:passwordlol@localhost:8888/blogz'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:passwordlol@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
@@ -24,7 +26,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(120), unique = True)
     password = db.Column(db.String(120))
-    blogs = db.relationship('Blog', backref = 'owner')
 
     def __init__(self, username, password):
         self.username = username
@@ -38,8 +39,7 @@ def require_login():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-   users =  User.query.order_by.all()
-   return render_template('index.html', users = users)
+   return render_template('index.html', User = User)
 
 @app.route('/blog', methods=['POST', 'GET'])
 def blog_listing():
@@ -173,4 +173,5 @@ def logout():
     return redirect('/blog')
 
 if __name__ == "__main__":
+
     app.run()
