@@ -1,7 +1,6 @@
 from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+
 
 
 
@@ -10,33 +9,29 @@ app.secret_key = "923hr2nc';l,"
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:passwordlol@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-some_engine = create_engine('mysql+pymysql://blogz:passwordlol@localhost:8889/blogz')
-Session = sessionmaker(bind=some_engine)
 
-# create a Session
-session = Session()
 
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(120))
-    content = db.Column(db.Text())
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    content = db.Column(db.Text(), nullable = False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __init__(self, title, content, owner):
         self.title = title
         self.content = content
-        self.body = body
         self.owner = owner
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(120), unique = True)
-    body = db.Column(db.Text)
     password = db.Column(db.String(120))
+    blogs = db.relationship('Blog', backref='owner')
 
     def __init__(self, username, password):
         self.username = username
@@ -48,6 +43,11 @@ def require_login():
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('/login')
 
+@app.route('/', methods=['POST', 'GET'])
+def index():
+    users = User.query.all()
+    return render_template('index.html', users = users)
+
 @app.route('/blog', methods=['POST', 'GET'])
 def blog_listing():
     title = "Blogz"
@@ -58,16 +58,16 @@ def blog_listing():
     if "id" in request.args:
         post_id = request.args.get('id')
         blog = Blog.query.filter_by(id = post_id).all()
-        return render_template('blogs.html', title = title, Blog = Blog, post_id = post_id)
+        return render_template('blogs.html', title = title, blog = blog, post_id = post_id)
 
     elif "user" in request.args:
         user_id = request.args.get('user')
         blog = Blog.query.filter_by(owner_id = user_id).all()
-        return render_template('blogs.html', title = title, Blog = Blog)
+        return render_template('blogs.html', title = title, blog = blog)
 
     else:
         blog = Blog.query.order_by(Blog.id.desc()).all()
-        return render_template('blogs.html', title = title, Blog = Blog)
+        return render_template('blogs.html', title = title, blog = blog)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():

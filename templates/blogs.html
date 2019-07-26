@@ -2,7 +2,7 @@
 {% block content %}
 <h1>Blog</h1>
 <div class="blogs">
-    {% if blog|length == 0 %}
+    {% if blog.length == 0 %}
     <p>No posts yet! <a href="/newpost">Write one!</a></p>
 
     {% else %}
